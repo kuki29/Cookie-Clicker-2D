@@ -8,3 +8,4 @@ Currenty game has only basic features. It has:
 - Disasters, which can create some troubles for player
 - Stats and messages
 - Also you can hold control, shift or alt key, while selling the cookies to sell 25, 10 or 5 cookies in one click
+- Statistic window
