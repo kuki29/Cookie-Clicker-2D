@@ -6,41 +6,52 @@ using UnityEngine.UI;
 
 public class GlobalResourceManagment : MonoBehaviour
 {
-    public static int cookieCount = 0;
-    public static int moneyCount = 0;
+    public static int cookiesCount = 0;
+    public static int moneyCount = 100;
     public static int bakersCount = 0;
+    public static int sellManagersCount = 0;
 
     public static int bakerPrice = 10;
+    public static int sellManagerPrice = 30;
 
     public GameObject cookieDisplay;
     public GameObject moneyDisplay;
-    public GameObject bakersDisplay;
+    public GameObject cookieProducingDisplay;
+    public GameObject cookieSellingDisplay;
     public GameObject bakersPriceDisplay;
+    public GameObject sellManagersPriceDisplay;
     public GameObject statusDisplay;
 
     public GameObject statisticPopup;
 
     public GameObject bakersButton;
+    public GameObject sellManagersButton;
 
     public GameObject sellCookieAudio;  // Note: Gameobject because it has two different sounds
 
-    public AudioSource buyBakerSound;
+    public AudioSource HireBakerSound;
     public AudioSource makeCookieSound;
     public AudioSource buzzSound;
 
     private bool isCreatingCookie = false;
-    private float productivity = 1f;
+    private float bakersProductivity = 1f;
+    private bool isSellingCookie = false;
+    private float sellManagersProductivity = 1f;
 
     private static uint madeCookies = 0;
+    private static uint madeMoney = 0;
     private static uint spendMoney = 0;
     private static uint hiredBakers = 0;
+    private static uint hiredSellManagers = 0;
 
     void Update()
     {
         DisplayStats();
         DisplayBakersPrice();
+        DisplaySellManagersPrice();
 
         CookieGenerator();
+        CookieSeller();
 
         BuyButtonsAvailability();
     }
@@ -49,42 +60,62 @@ public class GlobalResourceManagment : MonoBehaviour
     {
         DisplayCookiesAmount();
         DisplayCashAmount();
-        DisplayBakersAmount();
+        DisplayCookieGeneratingAmount();
+        DisplayCookieSellingAmount();
     }
     
-    public void BuyBaker()
+    public void HireBaker()
     {
         if (moneyCount >= bakerPrice)
         {
-            buyBakerSound.Play();
+            HireBakerSound.Play();
             AddBaker();
-            if (bakersDisplay.active == false)
+
+            if (cookieProducingDisplay.active == false)
 			{
-                bakersDisplay.SetActive(true);
+                cookieProducingDisplay.SetActive(true);
 			}
         }
         else
         {
-            statusDisplay.GetComponent<Text>().text = "Not enough money to buy auto cookie.";
+            statusDisplay.GetComponent<Text>().text = "Not enough money to hire a baker.";
             statusDisplay.GetComponent<Animation>().Play("StatusAnim");
         }
     }
     
+    public void HireSellManager()
+	{
+        if (moneyCount >= sellManagerPrice)
+		{
+            AddSellManager();
+
+            if (cookieSellingDisplay.active == false)
+			{
+                cookieSellingDisplay.SetActive(true);
+			}
+		}
+        else
+		{
+            statusDisplay.GetComponent<Text>().text = "Not enough money to hire a sell manager.";
+            statusDisplay.GetComponent<Animation>().Play("StatusAnim");
+        }
+	}
+
     public void MakeCookie()
 	{
         makeCookieSound.Play();
-        cookieCount++;
+        cookiesCount++;
         madeCookies++;
     }
 
     public void ProcessSellCookie()
 	{
-        if (cookieCount > 0)
+        if (cookiesCount > 0)
         {
             ProcessSellClick();
             PlaySellAudio();
         }
-        else if (cookieCount == 0)
+        else if (cookiesCount == 0)
         {
             statusDisplay.GetComponent<Text>().text = "Not enough cookies to sell.";
             statusDisplay.GetComponent<Animation>().Play("StatusAnim");
@@ -97,8 +128,10 @@ public class GlobalResourceManagment : MonoBehaviour
         statisticPopup.SetActive(true);
 
         string statistic = "You made " + madeCookies + " cookies\n" +
+                            "You made $" + madeMoney + "\n" +
                             "You spend $" + spendMoney + "\n" +
-                            "You hired " + hiredBakers + " bakers\n";
+                            "You hired " + hiredBakers + " bakers\n" +
+                            "You hires " + hiredSellManagers + " sell managers";
 
         statisticPopup.GetComponentInChildren<Text>().text = statistic;
 	}
@@ -111,7 +144,7 @@ public class GlobalResourceManagment : MonoBehaviour
 
     void DisplayCookiesAmount()
     {
-        cookieDisplay.GetComponent<Text>().text = "Cookies: " + cookieCount;
+        cookieDisplay.GetComponent<Text>().text = "Cookies: " + cookiesCount;
     }
 
     void DisplayCashAmount()
@@ -119,9 +152,14 @@ public class GlobalResourceManagment : MonoBehaviour
         moneyDisplay.GetComponent<Text>().text = "$" + moneyCount;
     }
 
-    void DisplayBakersAmount()
+    void DisplayCookieGeneratingAmount()
     {
-        bakersDisplay.GetComponent<Text>().text = "Bakers: " + bakersCount;
+        cookieProducingDisplay.GetComponent<Text>().text = "You making " + GetCookiesPerSecond() + " cookies per second";
+    }
+
+    void DisplayCookieSellingAmount()
+	{
+        cookieSellingDisplay.GetComponent<Text>().text = "You selling " + GetCookieSellsPerSecond() + " cookies per second";
     }
 
     void DisplayBakersPrice()
@@ -129,25 +167,44 @@ public class GlobalResourceManagment : MonoBehaviour
         bakersPriceDisplay.GetComponent<Text>().text = "$" + bakerPrice;
     }
 
+    void DisplaySellManagersPrice()
+	{
+        sellManagersPriceDisplay.GetComponent<Text>().text = "$" + sellManagerPrice;
+	}
+
+    int GetCookiesPerSecond()
+	{
+        return Mathf.RoundToInt(bakersCount * bakersProductivity);
+	}
+
+    int GetCookieSellsPerSecond()
+	{
+        return Mathf.RoundToInt(sellManagersCount * sellManagersProductivity);
+	}
+
     void BuyButtonsAvailability()
     {
         if (moneyCount >= bakerPrice)
         {
             bakersButton.GetComponent<Button>().interactable = true;
         }
+        if (moneyCount >= sellManagerPrice)
+		{
+            sellManagersButton.GetComponent<Button>().interactable = true;
+		}
     }
 
     void SellCookies(int amount)
     {
-        if (cookieCount > amount)
+        if (cookiesCount > amount)
         {
-            cookieCount -= amount;
+            cookiesCount -= amount;
             moneyCount += amount;
         }
         else
         {
-            moneyCount += cookieCount;
-            cookieCount = 0;
+            moneyCount += cookiesCount;
+            cookiesCount = 0;
         }
     }
 
@@ -174,12 +231,12 @@ public class GlobalResourceManagment : MonoBehaviour
 
     void PlaySellAudio()
 	{
-        sellCookieAudio.GetComponents<AudioSource>()[Random.Range(0, 2)].Play();
+        sellCookieAudio.GetComponents<AudioSource>()[Random.Range(0, 1)].Play();
     }
 
     void CookieGenerator()
     {
-        if (bakersCount > 0)
+        if (GetCookiesPerSecond() > 0)
         {
             if (!isCreatingCookie)
             {
@@ -191,11 +248,42 @@ public class GlobalResourceManagment : MonoBehaviour
 
     IEnumerator AutoCreateCookie()
     {
-        cookieCount += Mathf.RoundToInt(bakersCount * productivity);
-        madeCookies += (uint)Mathf.RoundToInt(bakersCount * productivity);
+        cookiesCount += GetCookiesPerSecond();
+        madeCookies += (uint)GetCookiesPerSecond();
         yield return new WaitForSeconds(1);
         isCreatingCookie = false;
     }
+
+    void CookieSeller()
+	{
+        if (GetCookieSellsPerSecond() > 0)
+		{
+            if (!isSellingCookie)
+			{
+                isSellingCookie = true;
+                StartCoroutine(AutoSellCookie());
+			}                
+		}
+	}
+
+    IEnumerator AutoSellCookie()
+	{
+        if (GetCookieSellsPerSecond() > cookiesCount)
+		{
+            moneyCount += cookiesCount;
+            madeMoney += (uint)cookiesCount;
+            cookiesCount = 0;
+		}
+        else
+		{
+            moneyCount += GetCookieSellsPerSecond();
+            cookiesCount -= GetCookieSellsPerSecond();
+            madeMoney += (uint)GetCookieSellsPerSecond();
+		}
+
+        yield return new WaitForSeconds(1);
+        isSellingCookie = false;
+	}
 
     void AddBaker()
     {
@@ -208,4 +296,16 @@ public class GlobalResourceManagment : MonoBehaviour
             bakerPrice = bakersCount * 7 + 10;
 		}
     }
+
+    void AddSellManager()
+	{
+        if (moneyCount >= sellManagerPrice)
+		{
+            moneyCount -= sellManagerPrice;
+            spendMoney += (uint)sellManagerPrice;
+            sellManagersCount++;
+            hiredSellManagers++;
+            sellManagerPrice = (sellManagersCount * 9) + 30;
+		}
+	}
 }

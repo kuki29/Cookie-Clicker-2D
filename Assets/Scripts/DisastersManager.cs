@@ -147,7 +147,7 @@ public class DisastersManager : MonoBehaviour
 				}
                 else if (disaster.Target == DisasterTarget.Cookies)
 				{
-                    damage *= cookieCount;
+                    damage *= cookiesCount;
 				}
                 else if (disaster.Target == DisasterTarget.Money)
 				{
@@ -176,21 +176,21 @@ public class DisastersManager : MonoBehaviour
         switch (disaster.Target)
 		{
             case DisasterTarget.Cookies:
-                if (cookieCount == 0)
+                if (cookiesCount == 0)
                 {
                     damage = 0;
                     Debug.Log("Not enough cookies to process disaster");
                     yield break;
                 }
 
-                if (damage > cookieCount)
+                if (damage > cookiesCount)
 				{
-                    damage = cookieCount;
-                    cookieCount = 0;
+                    damage = cookiesCount;
+                    cookiesCount = 0;
 				}
                 else
 				{
-                    cookieCount -= damage;
+                    cookiesCount -= damage;
 				}
 
                 message += damage + " cookies.";
