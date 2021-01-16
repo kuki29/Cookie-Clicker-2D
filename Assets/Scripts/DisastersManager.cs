@@ -151,7 +151,7 @@ public class DisastersManager : MonoBehaviour
 				}
                 else if (disaster.Target == DisasterTarget.Money)
 				{
-                    damage *= cashCount;
+                    damage *= moneyCount;
 				}
                 else
 				{
@@ -197,21 +197,21 @@ public class DisastersManager : MonoBehaviour
                 break;
 
             case DisasterTarget.Money:
-                if (cashCount == 0)
+                if (moneyCount == 0)
                 {
                     damage = 0;
                     Debug.Log("Not enough money to process disaster");
                     yield break;
                 }
 
-                if (damage > cashCount)
+                if (damage > moneyCount)
                 {
-                    damage = cashCount;
-                    cashCount = 0;
+                    damage = moneyCount;
+                    moneyCount = 0;
                 }
                 else
                 {
-                    cashCount -= damage;
+                    moneyCount -= damage;
                 }
 
                 message += damage + "$.";
