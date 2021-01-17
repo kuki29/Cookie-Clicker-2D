@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class RotateSky : MonoBehaviour
 {
-    [Range(0f, 1f)]
-    public float rotationSpeed = .1f;
+    [Range(0f, 10f)]
+    public float rotationSpeed = 2f;
 
     private float rotation = 0f;
 
     void Update()
     {
-        RenderSettings.skybox.SetFloat("_Rotation", rotation += rotationSpeed);
+        RenderSettings.skybox.SetFloat("_Rotation", rotation += rotationSpeed * Time.deltaTime);
     }
 }

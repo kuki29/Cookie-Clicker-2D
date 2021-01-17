@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-using static GlobalResourceManagment;
+using static GlobalResources;
+using static GlobalEmployees;
 
 public class DisastersManager : MonoBehaviour
 {
