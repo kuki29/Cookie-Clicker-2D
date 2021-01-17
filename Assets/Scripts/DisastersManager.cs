@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -124,6 +125,41 @@ public class DisastersManager : MonoBehaviour
             StartCoroutine(DoDisaster(disaster, duration - 5));
 		}
 
+        damage = CalculateDisasterDamage(disaster).FirstOrDefault();
+
+        if (damage == 0)
+		{
+            yield break;
+        }
+
+        message += damage;
+        if (disaster.Target == DisasterTarget.Cookies)
+        {
+            message += " cookies.";
+        }
+        else if (disaster.Target == DisasterTarget.Money)
+        {
+            message += " $.";
+        }
+        else if (disaster.Target == DisasterTarget.Bakers)
+        {
+            message += " bakers.";
+        }
+
+        if (damage > 0)
+		{
+            statusDisplay.GetComponent<Text>().text = message;
+            statusDisplay.GetComponent<Animation>().PlayQueued("Display1s");
+            statusDisplay.GetComponent<Animation>().PlayQueued("StatusAnim");
+		}
+
+        yield return new WaitForSeconds(5);
+    }
+
+    IEnumerable<int> CalculateDisasterDamage(Disaster disaster)
+	{
+        int damage = 0;
+
         if (disaster.DamageType == DisasterDamageType.Amount)
         {
             if (disaster.MaxAmount.HasValue)
@@ -131,31 +167,31 @@ public class DisastersManager : MonoBehaviour
                 damage = Random.Range(Mathf.RoundToInt(disaster.MaxAmount.Value / 3f), disaster.MaxAmount.Value);
             }
             else
-			{
+            {
                 Debug.LogError("Disaster wich has an amount type of damage must have a value of max amount of damage!!! ");
                 yield break;
             }
         }
         else
-		{
+        {
             if (disaster.MaxPercentage.HasValue)
             {
                 damage = Mathf.RoundToInt(Random.Range(disaster.MaxPercentage.Value / 3f, disaster.MaxPercentage.Value));
 
                 if (disaster.Target == DisasterTarget.Bakers)
-				{
+                {
                     damage *= bakersCount;
-				}
+                }
                 else if (disaster.Target == DisasterTarget.Cookies)
-				{
+                {
                     damage *= cookiesCount;
-				}
+                }
                 else if (disaster.Target == DisasterTarget.Money)
-				{
+                {
                     damage *= moneyCount;
-				}
+                }
                 else
-				{
+                {
                     Debug.LogError("Unknown type of disaster target!!!");
                     yield break;
                 }
@@ -169,13 +205,8 @@ public class DisastersManager : MonoBehaviour
 
         damage = Mathf.RoundToInt(damage * difficulty);
 
-        if (damage == 0)
-		{
-            yield break;
-        }
-
         switch (disaster.Target)
-		{
+        {
             case DisasterTarget.Cookies:
                 if (cookiesCount == 0)
                 {
@@ -185,16 +216,14 @@ public class DisastersManager : MonoBehaviour
                 }
 
                 if (damage > cookiesCount)
-				{
+                {
                     damage = cookiesCount;
                     cookiesCount = 0;
-				}
+                }
                 else
-				{
+                {
                     cookiesCount -= damage;
-				}
-
-                message += damage + " cookies.";
+                }
                 break;
 
             case DisasterTarget.Money:
@@ -214,8 +243,6 @@ public class DisastersManager : MonoBehaviour
                 {
                     moneyCount -= damage;
                 }
-
-                message += damage + "$.";
                 break;
 
             case DisasterTarget.Bakers:
@@ -235,18 +262,9 @@ public class DisastersManager : MonoBehaviour
                 {
                     bakersCount -= damage;
                 }
-
-                message += damage + " bakers.";
                 break;
         }
 
-        if (damage > 0)
-		{
-            statusDisplay.GetComponent<Text>().text = message;
-            statusDisplay.GetComponent<Animation>().PlayQueued("Display1s");
-            statusDisplay.GetComponent<Animation>().PlayQueued("StatusAnim");
-		}
-
-        yield return new WaitForSeconds(5);
+        yield return damage;
     }
 }
