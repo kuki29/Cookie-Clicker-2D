@@ -120,7 +120,7 @@ public class GlobalEmployees : MonoBehaviour
     IEnumerator AutoCreateCookie()
     {
         GlobalResources.cookiesCount += GetCookiesPerSecond();
-        Statistics.madeCookies += (uint)GetCookiesPerSecond();
+        Statistics.madeCookies += GetCookiesPerSecond();
         yield return new WaitForSeconds(1);
         isCreatingCookie = false;
     }
@@ -142,14 +142,14 @@ public class GlobalEmployees : MonoBehaviour
         if (GetCookieSellsPerSecond() > GlobalResources.cookiesCount)
         {
             GlobalResources.moneyCount += GlobalResources.cookiesCount;
-            Statistics.madeMoney += (uint)GlobalResources.cookiesCount;
+            Statistics.madeMoney += GlobalResources.cookiesCount;
             GlobalResources.cookiesCount = 0;
         }
         else
         {
             GlobalResources.moneyCount += GetCookieSellsPerSecond();
             GlobalResources.cookiesCount -= GetCookieSellsPerSecond();
-            Statistics.madeMoney += (uint)GetCookieSellsPerSecond();
+            Statistics.madeMoney += GetCookieSellsPerSecond();
         }
 
         yield return new WaitForSeconds(1);
@@ -161,7 +161,7 @@ public class GlobalEmployees : MonoBehaviour
         if (GlobalResources.moneyCount >= bakerPrice)
         {
             GlobalResources.moneyCount -= bakerPrice;
-            Statistics.spendMoney += (uint)bakerPrice;
+            Statistics.spendMoney += bakerPrice;
             bakersCount++;
             Statistics.hiredBakers++;
             bakerPrice = bakersCount * 7 + 10;
@@ -173,7 +173,7 @@ public class GlobalEmployees : MonoBehaviour
         if (GlobalResources.moneyCount >= sellManagerPrice)
         {
             GlobalResources.moneyCount -= sellManagerPrice;
-            Statistics.spendMoney += (uint)sellManagerPrice;
+            Statistics.spendMoney += sellManagerPrice;
             sellManagersCount++;
             Statistics.hiredSellManagers++;
             sellManagerPrice = (sellManagersCount * 9) + 30;

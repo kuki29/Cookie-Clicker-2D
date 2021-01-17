@@ -7,11 +7,11 @@ public class Statistics : MonoBehaviour
 {
     public GameObject statisticPopup;
 
-    public static uint madeCookies = 0;
-    public static uint madeMoney = 0;
-    public static uint spendMoney = 0;
-    public static uint hiredBakers = 0;
-    public static uint hiredSellManagers = 0;
+    public static int madeCookies = 0;
+    public static int madeMoney = 0;
+    public static int spendMoney = 0;
+    public static int hiredBakers = 0;
+    public static int hiredSellManagers = 0;
 
     public void ShowStatistic()
     {

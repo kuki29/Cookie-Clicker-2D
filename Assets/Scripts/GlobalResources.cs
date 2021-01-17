@@ -88,12 +88,12 @@ public class GlobalResources : MonoBehaviour
         {
             cookiesCount -= amount;
             moneyCount += amount;
-            Statistics.madeMoney += (uint)amount;
+            Statistics.madeMoney += amount;
         }
         else
         {
             moneyCount += cookiesCount;
-            Statistics.madeMoney += (uint)cookiesCount;
+            Statistics.madeMoney += cookiesCount;
             cookiesCount = 0;
         }
     }
