@@ -4565,6 +4565,7 @@ GameObject:
   - component: {fileID: 1792840881}
   - component: {fileID: 1792840882}
   - component: {fileID: 1792840879}
+  - component: {fileID: 1792840884}
   m_Layer: 0
   m_Name: MechanicsObject
   m_TagString: Untagged
@@ -4653,6 +4654,19 @@ MonoBehaviour:
   sellCookieAudio: {fileID: 1310435986}
   makeCookieSound: {fileID: 241324622}
   buzzSound: {fileID: 294656141}
+--- !u!114 &1792840884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1792840878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3aef291e03c99747a53f5deee100eef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mechanicsObject: {fileID: 1792840878}
 --- !u!1 &1819531869
 GameObject:
   m_ObjectHideFlags: 0
